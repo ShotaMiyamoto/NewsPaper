@@ -5,23 +5,69 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     //===================移動処理関係=====================
-    private Rigidbody rb;
-    [SerializeField]
-    private float maxSpeed = 30f;
-    [SerializeField]
-    private float accel = 250f;
+
+    /// <summary>
+    /// 自分のRigidbody
+    /// </summary>
+    private Rigidbody rbodySelf;
+
+    /// <summary>
+    /// 後輪のRigidbody
+    /// </summary>
+    public Rigidbody rbWheel;
+
+    /// <summary>
+    /// 後輪の最高回転速度
+    /// </summary>
+    [SerializeField] private float maxAngularVel = 500f;
+
+    /// <summary>
+    /// Trueで移動可能
+    /// </summary>
+    [SerializeField] private bool canMove = true;
+
+    /// <summary>
+    /// Z方向の速度上限
+    /// </summary>
+    [SerializeField] private float maxSpeed = 30f;
+
+    /// <summary>
+    /// Z軸の加速度
+    /// </summary>
+    [SerializeField] private float accel = 250f;
+
+
+    //===================回転処理関係=====================
+
+    /// <summary>
+    /// 回転する時の速度
+    /// </summary>
+    [SerializeField] private float sideMoveSpeed = 50f;
+
+    /// <summary>
+    /// InputGetAxisで得た方向と回転速度を掛け合わせる受け皿
+    /// </summary>
+    private float x = 0;
+
+    /// <summary>
+    /// 動きを減速させる係数
+    /// </summary>
+    private float coefficient = 0.95f; 
 
     //===================射撃処理関係=====================
     public GameObject newsPaperPrefab;
 
-
-
+    //===================爆発処理関係=====================
+    public GameObject explosionPrefab;
+    public GameObject firePrefab;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        rbodySelf = GetComponent<Rigidbody>();
+        rbWheel.maxAngularVelocity = maxAngularVel;
+
     }
 
     // Update is called once per frame
@@ -32,13 +78,41 @@ public class PlayerController : MonoBehaviour
             Instantiate(newsPaperPrefab, this.transform.position + new Vector3(0,1f,0f), newsPaperPrefab.transform.rotation);
         }
 
+        x = Input.GetAxis("Horizontal") * sideMoveSpeed;
+
     }
 
     void FixedUpdate()
     {
-        if (rb.velocity.magnitude < maxSpeed)
+        if (canMove)
         {
-            rb.AddForce(new Vector3(0,0,accel));
+            //最高速度に達してなければトルクをかける
+            if (rbodySelf.velocity.magnitude < maxSpeed)
+            {
+                //rb.AddForce(new Vector3(0, 0, accel));
+                rbWheel.AddTorque(transform.right * accel);
+            }
+
+            //横矢印の入力があれば回転。なければ徐々に減速する
+            if (Input.GetAxis("Horizontal") != 0)
+            {
+                rbodySelf.AddTorque(new Vector3(x, 0, 0));
+            }
+            else
+            {
+                rbodySelf.AddTorque(new Vector3(coefficient, 0, 0));
+            }
+            
+        }
+    }
+
+    void OnTriggerEnter(Collider col)
+    {
+        if(col.tag == "Ground")
+        {
+            Instantiate(explosionPrefab, this.transform.position, explosionPrefab.transform.rotation);
+            Instantiate(firePrefab, this.transform.position - new Vector3 (0, this.transform.position.y, 0) , firePrefab.transform.rotation);
+            Destroy(this.gameObject);
         }
     }
 }
