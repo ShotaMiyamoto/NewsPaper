@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
@@ -61,21 +62,26 @@ public class PlayerController : MonoBehaviour
     public GameObject explosionPrefab;
     public GameObject firePrefab;
 
+    //===================得点処理関係=====================
+    private int points = 0;
+    public TextMeshProUGUI pointText;
+
 
     // Start is called before the first frame update
     void Start()
     {
         rbodySelf = GetComponent<Rigidbody>();
         rbWheel.maxAngularVelocity = maxAngularVel;
-
+        pointText.text = "得点:" + points;
     }
 
     // Update is called once per frame
     void Update()
     {
+        //スペースバーで射撃
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Instantiate(newsPaperPrefab, this.transform.position + new Vector3(0,1f,0f), newsPaperPrefab.transform.rotation);
+            Instantiate(newsPaperPrefab, this.transform.position + new Vector3(0,1.5f,0f), newsPaperPrefab.transform.rotation);
         }
 
         x = Input.GetAxis("Horizontal") * sideMoveSpeed;
@@ -100,9 +106,9 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                
                 rbodySelf.AddTorque(new Vector3(coefficient, 0, 0));
             }
-            
         }
     }
 
@@ -112,7 +118,14 @@ public class PlayerController : MonoBehaviour
         {
             Instantiate(explosionPrefab, this.transform.position, explosionPrefab.transform.rotation);
             Instantiate(firePrefab, this.transform.position - new Vector3 (0, this.transform.position.y, 0) , firePrefab.transform.rotation);
+            GameManager.Instance.GameOver();
             Destroy(this.gameObject);
         }
+    }
+
+    public void GetPoints(int value)
+    {
+        points += value;
+        pointText.text = "得点:" + points;
     }
 }

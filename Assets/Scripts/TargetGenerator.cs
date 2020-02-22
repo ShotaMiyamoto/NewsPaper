@@ -9,7 +9,8 @@ public class TargetGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Instantiate(Targets[0], this.transform.position, Targets[0].transform.rotation);
+        int randomNum = Random.Range(0, Targets.Length);
+        Instantiate(Targets[randomNum], this.transform.position, Targets[randomNum].transform.rotation);
     }
 
 }
