@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+//using Cinemachine;
 
 public class PlayerController : MonoBehaviour
 {
@@ -50,21 +51,21 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private float x = 0;
 
-    /// <summary>
-    /// 動きを減速させる係数
-    /// </summary>
-    private float coefficient = 0.95f; 
-
     //===================射撃処理関係=====================
     public GameObject newsPaperPrefab;
 
-    //===================爆発処理関係=====================
+    //===================ゲームオーバー処理関係=====================
     public GameObject explosionPrefab;
     public GameObject firePrefab;
 
     //===================得点処理関係=====================
     private int points = 0;
     public TextMeshProUGUI pointText;
+
+    //===================サウンド処理関係=====================
+    public SoundManager soundManager;
+    private AudioSource[] audioSource; //0がバイク音ループ　1が投げる音
+    
 
 
     // Start is called before the first frame update
@@ -73,6 +74,7 @@ public class PlayerController : MonoBehaviour
         rbodySelf = GetComponent<Rigidbody>();
         rbWheel.maxAngularVelocity = maxAngularVel;
         pointText.text = "得点:" + points;
+        audioSource = GetComponents<AudioSource>();
     }
 
     // Update is called once per frame
@@ -82,6 +84,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Instantiate(newsPaperPrefab, this.transform.position + new Vector3(0,1.5f,0f), newsPaperPrefab.transform.rotation);
+            audioSource[1].Play(); //投げる音再生
         }
 
         x = Input.GetAxis("Horizontal") * sideMoveSpeed;
@@ -106,19 +109,24 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                
-                rbodySelf.AddTorque(new Vector3(coefficient, 0, 0));
+                rbodySelf.angularVelocity = Vector3.zero;
+                //Debug.Log("回転制御中");
             }
         }
     }
 
     void OnTriggerEnter(Collider col)
     {
+        //地面にタイヤ以外の場所がヒットしたら爆発
         if(col.tag == "Ground")
         {
+            GameManager.Instance.GameOver();
             Instantiate(explosionPrefab, this.transform.position, explosionPrefab.transform.rotation);
             Instantiate(firePrefab, this.transform.position - new Vector3 (0, this.transform.position.y, 0) , firePrefab.transform.rotation);
-            GameManager.Instance.GameOver();
+            soundManager.PlaySound(0);
+            //カメラシェイク用
+            //var source = GetComponent<Cinemachine.CinemachineImpulseSource>();
+            //source.GenerateImpulse();
             Destroy(this.gameObject);
         }
     }

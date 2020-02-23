@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1352688790409023758}
   - component: {fileID: 1306385820848415358}
   - component: {fileID: 3505186502239636111}
+  - component: {fileID: -6191199341664543876}
   m_Layer: 0
   m_Name: Target_Lv0
   m_TagString: Untagged
@@ -111,6 +112,8 @@ MonoBehaviour:
   fireWorksPrefab:
   - {fileID: 100748, guid: cd4d7020429cde74db076ffa72495419, type: 3}
   levelNum: 0
+  soundManager: {fileID: 6116108076898842818, guid: 9f6b730757fe12c419acdd60d44d9ccc,
+    type: 3}
 --- !u!65 &3505186502239636111
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -124,3 +127,15 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.7174545, y: 0.71745443, z: 0.07174573}
   m_Center: {x: 0.000000044703494, y: 0, z: -0.00000013783577}
+--- !u!114 &-6191199341664543876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1307589314807486694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33906afb985826741876ace3f9a8d79b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

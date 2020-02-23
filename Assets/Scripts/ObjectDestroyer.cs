@@ -5,18 +5,27 @@ using UnityEngine;
 public class ObjectDestroyer : MonoBehaviour
 {
     private GameObject Player;
+    private bool isGameOverRecv = false;
 
     private void Start()
     {
-        Player = GameObject.FindWithTag("Player");
+        isGameOverRecv = GameManager.Instance.IsGameOver;
+        if (!isGameOverRecv)
+        {
+            Player = GameObject.FindWithTag("Player");
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Player.transform.position.z > this.transform.position.z + 100f)
+        isGameOverRecv = GameManager.Instance.IsGameOver;
+        if (!isGameOverRecv)
         {
-            Destroy(this.gameObject);
+            if (Player.transform.position.z > this.transform.position.z + 100f)
+            {
+                Destroy(this.gameObject);
+            }
         }
     }
 }

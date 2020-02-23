@@ -4,26 +4,34 @@ using UnityEngine;
 
 public class TargetController : MonoBehaviour
 {
-    public GameObject[] fireWorksPrefab;
+    [SerializeField] private GameObject[] fireWorksPrefab;
     private int points = 10;
     private GameObject player;
     [SerializeField] private int levelNum = 0;
+    [SerializeField] private SoundManager soundManager;
 
     void OnTriggerEnter(Collider col)
     {
         if(col.tag == "Newspaper"){
-            if(levelNum != 3)
+
+            switch (levelNum)
             {
-                int i = fireWorksPrefab.Length;
-                Instantiate(fireWorksPrefab[i], this.gameObject.transform.position, fireWorksPrefab[i].transform.rotation);
+                case 0:
+                case 1:
+                case 2:
+                    Instantiate(fireWorksPrefab[0], this.gameObject.transform.position, fireWorksPrefab[0].transform.rotation);
+                    soundManager.PlaySound(1);
+                    soundManager.PlaySound(2);
+                    break;
+                case 3:
+                    Instantiate(fireWorksPrefab[0], this.gameObject.transform.position, fireWorksPrefab[0].transform.rotation);
+                    soundManager.PlaySound(1);
+                    soundManager.PlaySound(2);
+                    break;
+                default:
+                    //何もしない
+                    break;
             }
-            else
-            {
-                Instantiate(fireWorksPrefab[0], this.gameObject.transform.position, fireWorksPrefab[0].transform.rotation);
-                Instantiate(fireWorksPrefab[1], this.gameObject.transform.position, fireWorksPrefab[1].transform.rotation);
-                Instantiate(fireWorksPrefab[2], this.gameObject.transform.position, fireWorksPrefab[2].transform.rotation);
-            }
-            
             player.GetComponent<PlayerController>().GetPoints(points);
             Destroy(this.gameObject);
         }
@@ -32,6 +40,7 @@ public class TargetController : MonoBehaviour
     void Start()
     {
         player = GameObject.FindWithTag("Player");
+        soundManager = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
 
         switch (levelNum) //レベルによってポイントを変える
         {

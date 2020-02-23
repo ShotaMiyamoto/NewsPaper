@@ -7,20 +7,26 @@ public class StageObjectGenerator : MonoBehaviour
     public GameObject player;
     public GameObject[] roadPrefabs;
     private float currentCourseEndPos = 10f; //最後に生成したコースプレファブの終点（次のコースをくっつけるZ座標）
+    private bool isGameOverRecv = false;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        isGameOverRecv = GameManager.Instance.IsGameOver;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(player.transform.position.z + 100f > currentCourseEndPos)
+        isGameOverRecv = GameManager.Instance.IsGameOver;
+        if (!isGameOverRecv)
         {
-            Instantiate(roadPrefabs[0], new Vector3(0, 0, currentCourseEndPos), roadPrefabs[0].transform.rotation); //生成
-            currentCourseEndPos += 10f;
+            if (player.transform.position.z + 100f > currentCourseEndPos)
+            {
+                int i = Random.Range(0, 6);
+                Instantiate(roadPrefabs[i], new Vector3(0, 0, currentCourseEndPos), roadPrefabs[i].transform.rotation); //生成
+                currentCourseEndPos += 10f;
+            }
         }
     }
 }
